@@ -1,0 +1,92 @@
+# 784. Letter Case Permutation
+class Solution:
+    def letterCasePermutation(self, S: str) -> List[str]:
+        res = [S]
+        for i in range(len(S)):
+            if S[i].isalpha():
+                for st in res[:]:
+                    l = list(st)
+                    if S[i].islower():
+                        l[i] = S[i].upper()
+                        res.append(''.join(l))
+                    else:
+                        l[i] = S[i].lower()
+                        res.append(''.join(l))
+        return res
+        
+# 17. Letter Combinations of a Phone Number
+class Solution(object):
+    def letterCombinations(self, digits):
+        """
+        :type digits: str
+        :rtype: List[str]
+        """
+        if digits == '':
+            return []
+        hash_table = {'2':'abc','3':'def','4':'ghi','5':'jkl','6':'mno','7':'pqrs','8':'tuv','9':'wxyz'}
+        res = ['']
+        count = 1
+        for i in digits:
+            length = len(hash_table[i])
+            temp = res
+            res = []
+            for k in range(len(temp)):
+                for j in range(length):
+                    value = temp[k] + hash_table[i][j]
+                    res.append(value)
+        return res
+
+#  40. Combination Sum II
+class Solution:
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        res = []
+        def restore(tgt, candidateset, s):
+            if tgt == 0:
+                s.sort()
+                if s and not s in res: res.append(s)
+            
+            for i in range(len(candidateset)):
+                if candidateset[i] > tgt:
+                    pass
+                else:
+                    restore(tgt-candidateset[i], candidateset[:i]+candidateset[i+1:],s+[candidateset[i]])             
+        restore(target, candidates, [])   
+        return res
+        
+# 46. Permutations
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        n = len(nums)
+        output = []
+        def backtrace(cur=[]):
+            if len(cur)==n:
+                output.append(cur[:])
+                return
+            for i in nums:
+                try:
+                    cur.index(i)
+                except Exception:
+                    cur.append(i)
+                    backtrace(cur)
+                    cur.pop()
+        backtrace()
+        return output
+
+# 52. N-Queens II
+class Solution:
+    def totalNQueens(self, n: int) -> int:
+        def check(nums,new):
+            for i in range(len(nums)):
+                if abs(new-nums[i]) in (0,len(nums)-i):
+                    return False
+            return True
+        ans=[]   
+        def backtrack(nums):
+            if len(nums)==n:
+                ans.append(0)
+                return 
+            for i in range(n):
+                if check(nums,i):
+                    backtrack(nums+[i])
+        backtrack([])
+        return len(ans)
