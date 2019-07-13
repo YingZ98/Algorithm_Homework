@@ -1,0 +1,133 @@
+# Leetcode 70 Climbing Stairs:
+class Solution:
+    """
+    @param n: An integer
+    @return: An integer
+    """
+    def climbStairs(self, n):
+        dp=[]
+        for i in range(n+1):
+            if i==0:
+                dp.append(0)
+            elif i==1:
+                dp.append(1)
+            elif i==2:
+                dp.append(2)
+            else:
+                dp.append(dp[i-1]+dp[i-2])
+        return dp[n]
+
+# Leetcode 53 Maximum SubArray:
+class Solution:
+    """
+    @param nums: A list of integers
+    @return: A integer indicate the sum of max subarray
+    """
+    def maxSubArray(self, nums):
+        # write your code here
+        m = nums
+        for i in range(1, len(nums)):
+            m[i] = max(nums[i], m[i-1]+nums[i])   
+        return max(m)
+
+# Leetcode 647 Palindromic Substrings:
+class Solution:
+    """
+    @param str: s string
+    @return: return an integer, denote the number of the palindromic substrings
+    """
+    def countPalindromicSubstrings(self, str):
+        # write your code here
+        input_String = str
+        if input_String is None or len(input_String) == 0:
+            return 0
+            
+        matrix = [[0 for j in range(len(input_String))] for i in range(len(input_String))]
+        result  = 0
+        
+        for i in range(len(input_String)):
+            for j in range(i+1):
+                if input_String[j] == input_String[i] and (i-j <= 2 or matrix[j+1][i-1] == 1):
+                    matrix[j][i] = 1
+                    result += 1
+                    
+        return result
+
+# Leetcode 483 Predict the Winner:
+class Solution:
+    """
+    @param nums: nums an array of scores
+    @return: check if player 1 will win
+    """
+    def PredictTheWinner(self, nums):
+        # write your code here
+      
+        if len(nums) & 1 == 0: return True
+        dp = [[0] * len(nums) for _ in range(len(nums))]
+        for i, v in enumerate(nums):
+            dp[i][i] = v
+        for i in range(1, len(nums)):
+            for j in range(len(nums) - i):
+                dp[j][j + i] = max(nums[j] - dp[j + 1][j + i], nums[j + i] - dp[j][j + i - 1])
+        return dp[0][-1] > 0
+
+# Leetcode 64 Minimum Path Sum:
+class Solution:
+    """
+    @param grid: a list of lists of integers
+    @return: An integer, minimizes the sum of all numbers along its path
+    """
+    def minPathSum(self, grid):
+        # write your code here
+        row = len(grid)
+        columns = len(grid[0])
+        if row ==0:
+            return 0
+        if row == 1 :
+            return sum(grid[0])
+        if columns == 1:
+            return sum(grid[:][0])
+        dp = [[0 for _ in range(columns+1)] for _ in range(row+1)]
+        for i in range(2, columns+1):
+            dp[0][i] = dp[0][i-1] + grid[0][i-2]
+        for j in range(2, row+1):
+            dp[j][0] = dp[j-1][0] + grid[j-2][0]
+        for i in range(1,row+1):
+            for j in range(1,columns+1):
+                    if dp[i][j - 1] > dp[i - 1][j]:
+                        dp[i][j] = dp[i-1][j] + grid[i - 1][j - 1]
+                    else:
+                        dp[i][j] = dp[i][j-1] + grid[i - 1][j - 1]
+        return dp[row][columns]
+
+# Leetcode 241
+class Solution:
+    """
+    @param input: a string
+    @return: return List[int]
+    """
+    def diffWaysToCompute(self, input):
+        # write your code here
+        res = []
+        try:
+            int(input)
+            return [int(input)]
+        except:
+            N = len(input)
+            for i in range(N):
+                if input[i] == "-" or input[i] == "+" or input[i] == "*":
+                    left = self.diffWaysToCompute(input[:i])
+                    right = self.diffWaysToCompute(input[i+1:])
+                    for j in range(len(left)):
+                        for k in range(len(right)):
+                            l = left[j]
+                            r = right[k]
+                            if input[i] == "+":
+                                res.append(l+r)
+                            elif input[i] == "-":
+                                res.append(l-r)
+                            else:
+                                res.append(l*r)
+            return list(res)
+
+
