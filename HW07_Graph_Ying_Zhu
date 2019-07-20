@@ -1,0 +1,127 @@
+# Leetcode 207
+class Solution:
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        d=collections.defaultdict(list)
+        for c in prerequisites:
+            d[c[0]]+=[c[1]]
+        e=set()
+        def f(i,g,c):
+            if i in c:
+                return False
+            elif i not in d:
+                return True
+            else:
+                t=True
+                b=c.copy()
+                b.add(i)
+                e.add(i)
+                for j in d[i]:
+                    t=t and f(j,g,b)
+                return t
+        for i in range(numCourses):
+            if i in d and i not in e and not f(i,i,set()):
+                    return False
+        return True
+        
+        
+# Leetcode 399
+class Solution(object):
+    def calcEquation(self, equations, values, queries):
+        """
+        :type equations: List[List[str]]
+        :type values: List[float]
+        :type queries: List[List[str]]
+        :rtype: List[float]
+        """
+        from collections import defaultdict
+        graph = defaultdict(set)
+        weight = defaultdict()
+        
+        for i, equation in enumerate(equations):
+            start, end = equation[0], equation[1]
+            graph[start].add(end)  
+            weight[(start, end)] = values[i] 
+            graph[end].add(start) 
+            weight[(end, start)] = 1.0 / values[i] 
+              
+        def dfs(start, end, visited):
+            if (start, end) in weight: 
+                return weight[(start, end)] 
+            
+            if start not in graph or end not in graph: 
+                return 0
+            
+            if start in visited: 
+                return 0
+            
+            visited.add(start) 
+            res = 0
+            
+            for tmp in graph[start]:
+                res = weight[(start, tmp)] * dfs(tmp, end, visited)
+                if res != 0: 
+                    weight[(start, end)] = res 
+                    break
+            visited.remove(start) 
+            return res
+        
+        res = []
+        for query in queries:
+            tmp = dfs(query[0], query[1], set())
+            if tmp == 0: 
+                tmp = -1.0
+            res.append(tmp)           
+            return res
+            
+            
+# Leetcode 787            
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, K: int) -> int:
+        roadMap = collections.defaultdict(lambda: [])
+        K += 2
+        dp = [[float('inf')] * K for i in range(n)]
+        for i in flights:
+            roadMap[i[1]].append((i[0], i[2]))
+            if i[0] == src:
+                dp[i[1]][1] = i[2]
+        for k in range(2, K):
+            for i in range(n):
+                    dp[i][k] = dp[i][k - 1]
+                    for m in roadMap[i]:
+                        dp[i][k] = min(dp[i][k], dp[m[0]][k - 1] + m[1])
+        return -1 if dp[dst][K - 1] == float('inf') else dp[dst][K - 1]
+
+
+# Lintcode 783
+class Solution:
+    """
+    @param n: maximum index of position.
+    @param m: the number of undirected edges.
+    @param x: 
+    @param y: 
+    @param w: 
+    @return: return the minimum risk value.
+    """
+    def getMinRiskValue(self, n, m, x, y, w):
+        edges = sorted(zip(w,x,y))
+            
+        father = [i for i in range(n+1)]
+        risk = 0     
+        for r, u, v in edges:
+            root1 = self.find(father, u)
+            root2 = self.find(father, v)
+            
+            if root1 != root2:
+                father[root1] = root2
+                risk = max(risk, r)
+            
+            if self.find(father, 0) == self.find(father,n):
+                return risk
+        return -1
+    
+    def find(self, father, node):
+        if father[node] == node:
+            return node
+        root = self.find(father, father[node])
+        father[node] = root
+        return root
